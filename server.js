@@ -49,4 +49,9 @@ app.get('/api/current-chart', async (req, res) => {
     }
 });
 
+app.get('/', (req, res) => {
+  res.send('Quantumelodies API is live!');
+});
+
+
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
