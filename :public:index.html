@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live Ephemeris</title>
+  <style>
+    body { font-family: sans-serif; background: #0f172a; color: white; padding: 2rem; }
+    h1 { font-size: 2rem; }
+    pre { background: #1e293b; padding: 1rem; border-radius: 8px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h1>Live Ephemeris</h1>
+  <button onclick="fetchChart()">🔄 Refresh Chart</button>
+  <pre id="output">Loading...</pre>
+
+  <script>
+    async function fetchChart() {
+      const res = await fetch('/api/current-chart');
+      const data = await res.json();
+      document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+    }
+
+    fetchChart(); // auto load on page open
+  </script>
+</body>
+</html>
