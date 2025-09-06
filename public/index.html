@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quantumelodies - Natal Chart Generator</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #0f172a;
+      color: white;
+      padding: 2rem;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+    }
+    input {
+      padding: 0.5rem;
+      width: 300px;
+      border: none;
+      border-radius: 4px;
+      margin-top: 0.25rem;
+    }
+    button {
+      margin-top: 1.5rem;
+      padding: 0.5rem 1rem;
+      background: #475569;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      margin-top: 2rem;
+      border-collapse: collapse;
+      background: #1e293b;
+    }
+    th, td {
+      border: 1px solid #334155;
+      padding: 0.5rem;
+      text-align: left;
+    }
+    th {
+      background: #334155;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔭 Quantumelodies: Natal Chart Generator</h1>
+
+  <form id="chart-form">
+    <label>
+      Birth Date:
+      <input type="date" id="birth-date" required />
+    </label>
+    <label>
+      Birth Time:
+      <input type="time" id="birth-time" required />
+    </label>
+    <label>
+      Timezone Offset (e.g. -0400 for NYC):
+      <input type="text" id="timezone" placeholder="e.g. -0400" required />
+    </label>
+    <label>
+      Coordinates (latitude,longitude):
+      <input type="text" id="coordinates" placeholder="e.g. 40.71,-74.00" required />
+    </label>
+    <button type="submit">🔮 Generate Chart</button>
+  </form>
+
+  <div id="chart-output">Awaiting input...</div>
+
+  <script>
+    document.getElementById('chart-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const date = document.getElementById('birth-date').value;
+      const time = document.getElementById('birth-time').value;
+      const rawTz = document.getElementById('timezone').value.trim(); // "-0400"
+      const coordinates = document.getElementById('coordinates').value.trim();
+
+      // Format timezone from -0400 to -04:00
+      const tzFormatted = rawTz.length === 5 ? rawTz.slice(0, 3) + ':' + rawTz.slice(3) : rawTz;
+
+      const datetime = `${date}T${time}${tzFormatted}`;
+
+      const url = `/api/current-chart?datetime=${encodeURIComponent(datetime)}&coordinates=${encodeURIComponent(coordinates)}`;
+
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        const positions = data?.data?.planet_positions;
+
+        if (!positions || !positions.length) {
+          document.getElementById('chart-output').innerHTML = "<p>⚠️ No planetary data returned.</p>";
+          return;
+        }
+
+        const rows = positions.map(p => `
+          <tr>
+            <td>${p.name}</td>
+            <td>${p.sign.name}</td>
+            <td>${p.position.degrees}° ${p.position.minutes}'</td>
+            <td>${p.house.number}</td>
+          </tr>
+        `).join('');
+
+        document.getElementById('chart-output').innerHTML = `
+          <table>
+            <thead>
+              <tr><th>Planet</th><th>Sign</th><th>Degrees</th><th>House</th></tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        `;
+      } catch (err) {
+        console.error(err);
+        document.getElementById('chart-output').innerHTML = `<p>❌ Error fetching chart data: ${err.message}</p>`;
+      }
+    });
+  </script>
+</body>
+</html>
