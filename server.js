@@ -64,7 +64,6 @@ app.get('/api/current-chart', async (req, res) => {
 });
 
 app.get('/', (req, res) => {
-<<<<<<< HEAD
   res.send('Quantumelodies API is running. Use the frontend form to query natal chart data.');
 });
 
@@ -75,4 +74,4 @@ app.listen(PORT, () => console.log(`✅ Server running on http://localhost:${POR
 
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
->>>>>>> cb39a5f8818ab7cfbfcd4b6a96bd24af9104e09e
+cb39a5f8818ab7cfbfcd4b6a96bd24af9104e09e
